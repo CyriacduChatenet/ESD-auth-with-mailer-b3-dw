@@ -9,4 +9,4 @@ const mailController = new MailController();
 
 router.get('/api/v1', sayHello)
 router.get('/api/v1/post', postController.getAllPosts);
-router.post('/api/v1/send-mail',mailController.sendMail);
+router.post('/api/v1/send-mail',mailController.sendWelcomeMail);

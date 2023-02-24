@@ -8,12 +8,24 @@ export class MailController {
       port: 25,
     });
   };
-  sendMail = (email: string) => {
+
+  sendWelcomeMail = (email: string) => {
     this.config().sendMail({
-        from: 'me@gmail.com',
-        to: 'you@gmail.com',
-        subject: 'Signup user',
-        text: `Welcome ${email} to my website`,
-    })
+      from: "me@gmail.com",
+      to: "you@gmail.com",
+      subject: "Signup user",
+      text: `Welcome ${email} to my website`,
+    });
+  };
+
+  sendResetPasswordMail = (email: string, token: string) => {
+    this.config().sendMail({
+      from: "me@gmail.com",
+      to: "you@gmail.com",
+      subject: "Signup user",
+      html: `<div>
+      <a href="">Reset password</a>
+      </div>`
+    });
   };
 }

@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 
 import User from "../models/user.schema";
 import { MailController } from "./mail.controller";
+import ResetTokenPassword from "../models/resetTokenPassword";
 
 export class AuthController {
   mailController = new MailController();
@@ -39,10 +40,23 @@ export class AuthController {
 
     try {
       const savedUser = user.save();
-      this.mailController.sendMail(email);
+      this.mailController.sendWelcomeMail(email);
       res.status(201).json(user);
     } catch (err: any) {
       throw new Error(err);
     }
   };
+
+  forgotPassword = async (req: Request, res: Response) => {
+    const { email } = req.body;
+    const findUserInDB = await User.findOne({ email });
+
+    const resetToken = jwt.sign({ email: findUserInDB?.email}, `${process.env.JWT_SECRET}`);
+
+    const resetTokenPassword = await ResetTokenPassword.create({ token: resetToken, user: findUserInDB });
+    const resetTokenPasswordSaved = resetTokenPassword.save();
+    res.status(200).json(resetToken);
+  };
+
+  resetPassword = (req: Request, res: Response) => {};
 }
