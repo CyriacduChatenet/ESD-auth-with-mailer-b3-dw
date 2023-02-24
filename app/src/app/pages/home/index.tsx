@@ -1,8 +1,9 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import "./App.css";
+import { FC, useState } from "react";
 
-function App() {
+import reactLogo from "../../assets/react.svg";
+import "./index.css";
+
+export const HomePage: FC = () => {
   const [count, setCount] = useState(0);
 
   return (
@@ -29,6 +30,4 @@ function App() {
       </p>
     </div>
   );
-}
-
-export default App;
+};

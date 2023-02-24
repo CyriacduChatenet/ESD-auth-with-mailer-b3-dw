@@ -21,10 +21,10 @@ export class MailController {
   sendResetPasswordMail = (email: string, token: string) => {
     this.config().sendMail({
       from: "me@gmail.com",
-      to: "you@gmail.com",
-      subject: "Signup user",
+      to: email,
+      subject: "Reset password user",
       html: `<div>
-      <a href="">Reset password</a>
+      <a href="http://localhost:5173/reset-password/${token}">Reset password</a>
       </div>`
     });
   };

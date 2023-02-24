@@ -1,14 +1,19 @@
 import { Response, Request } from "express";
 import bcrypt from "bcrypt";
-
 import jwt from 'jsonwebtoken';
+import { createHmac } from "crypto";
 
 import User from "../models/user.schema";
 import { MailController } from "./mail.controller";
 import ResetTokenPassword from "../models/resetTokenPassword";
+import { UserController } from "./user.controller";
+import { ResetPasswordToken } from "./reset-password-token.controller";
 
 export class AuthController {
   mailController = new MailController();
+  userController = new UserController();
+  resetPasswordToken = new ResetPasswordToken();
+
 
   signin = async (req: Request, res: Response) => {
     const { email, password } = req.body;
@@ -51,12 +56,22 @@ export class AuthController {
     const { email } = req.body;
     const findUserInDB = await User.findOne({ email });
 
-    const resetToken = jwt.sign({ email: findUserInDB?.email}, `${process.env.JWT_SECRET}`);
+    const resetToken = await createHmac('sha256', `${process.env.JWT_SECRET}`).digest('hex');;
 
-    const resetTokenPassword = await ResetTokenPassword.create({ token: resetToken, user: findUserInDB });
-    const resetTokenPasswordSaved = resetTokenPassword.save();
-    res.status(200).json(resetToken);
+    await ResetTokenPassword.create({ token: resetToken, user: findUserInDB });
+    await this.mailController.sendResetPasswordMail(email, resetToken);
+    res.status(200).json({ token: resetToken});
   };
 
-  resetPassword = (req: Request, res: Response) => {};
+  resetPassword = async (req: Request, res: Response) => {
+    const { resetToken } = req.params;
+    if(resetToken === undefined) {
+      throw new Error('token not found');
+    }
+    // const { password } = req.body;
+    // const token = await this.resetPasswordToken.findOne(resetToken);
+
+
+    // res.json({ resetToken, password });
+  };
 }
